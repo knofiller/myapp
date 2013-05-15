@@ -1,0 +1,11 @@
+#!/usr/bin/perl
+# 5/14/13
+
+use strict;
+use warnings;
+
+print "Would you like to play a game? ";
+chomp($_ = <STDIN>);
+if (/\byes\b/i) {
+	print "In that case, I recommend that you go bowling\n";
+}
