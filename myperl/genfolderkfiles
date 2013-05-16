@@ -1,0 +1,25 @@
+#!/usr/bin/perl
+# 5/15/13
+# generate folder with number thousands of files
+
+use strict;
+use warnings;
+
+sub usage {
+	print "Generate folder with thousands of files\n";
+	print "Usage:\n";
+	print "./genfolderkfiles <newfolder> <number of files (thousands of)> <size of files>\n";
+	print "Example : ./genfolderkfiles 5kfiles 5000 100\n";
+	print "Above example command will create folder name '5kfiles' with 5000 files with 100kb size file\n";
+	exit;
+}
+
+&usage() unless (@ARGV == 3);
+my $count = 0;
+my ($foldername,$num_files,$size_file) = @ARGV;
+mkdir ($foldername,02777) or die "Unable to make directory$!";
+while ($count < $num_files) {
+    $count++;
+    my $cmd = "dd if=/dev/urandom of=$foldername/file$count bs=1024 count=$size_file";
+    system($cmd);	
+}
