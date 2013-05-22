@@ -1,0 +1,35 @@
+#!/usr/bin/perl
+# 5/3/13
+# extract information proxy version, workorder,VM name, disk size,new %, backup/restore rate from avtar log file 
+
+use strict;
+use warnings;
+
+sub usage {
+    print "need to input folder contains avtar logs\n";
+    print "Example\n./parse_avtar <folder-avtar-logs>\n";
+    exit;
+}
+
+sub parse_avtar {
+    my @avtar_logs = <$_[0]*avtar.log>;
+    foreach (@avtar_logs) {
+        open FH,$_ or die "Unable to open $!";
+        print "$_\n";    
+        while (my $line = <FH>) {
+            if ($line =~ /work="(.*?)"/) {
+                 print "work order type $1\n";
+            }
+            if ($line =~ /Backup #.*(\d+\.\d+%)\s+new/) {
+                 print "% new $1\n";
+            }
+            if ($line =~ /Restored\s+(.*?[KMG]B) from selection/) {
+                print "Restored $1\n";
+            }
+        }
+        close FH;
+    }
+}
+
+&usage unless (@ARGV == 1);
+&parse_avtar($ARGV[0]);

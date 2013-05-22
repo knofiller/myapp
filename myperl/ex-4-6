@@ -1,0 +1,21 @@
+#!/usr/bin/perl
+#
+
+use strict;
+use warnings;
+
+sub find_max {
+    my ($a,$b) = @_;
+    if ($a > $b){
+        $a;
+    } else {
+        $b;
+    }
+}
+
+print "find max number of 2 numbers\n";
+print "input number 1 : ";
+chomp(my $number_1 = <STDIN>);
+print "input number 2: ";
+chomp(my $number_2 = <STDIN>);
+print "max number is :",&find_max($number_1,$number_2),"\n";

@@ -1,0 +1,40 @@
+#!/usr/bin/perl 
+#
+
+
+use strict;
+use warnings;
+
+use Net::OpenSSH; #in case some machine not have OpenSSH installed
+
+my @proxies = @ARGV;
+my $username = 'root';
+my $password = 'avam@r';
+
+if (!defined(@ARGV)) { 
+#    print "need to input proxy name or list proxy separate by spaces\n";
+    my $cmd = "sed -i 's/#--debug/--debug/g' /usr/local/avamarclient/var/avvcbimageAll.cmd";
+    system($cmd); 
+    $cmd = "sed -i 's/#--debug/--debug/g' /usr/local/avamarclient/var/avvcbimageAll.cmd";
+    foreach my $agent (1..8) {
+        my $cmd = "printf '%s\n%s\n' '--debug' '--status=60' > /usr/local/avamarclient/var-proxy-$agent/avtar.cmd";
+        system($cmd);
+    }
+    exit;
+}
+
+
+foreach my $proxy (@proxies) {
+    my $ssh = Net::OpenSSH->new($proxy,
+                                master_opts => [-o => "StrictHostKeyChecking=no"],
+                                user=>$username,password=>$password);
+    $ssh->error and die "Could not establish SSH connection : " , $ssh->error;
+    ### turn on debug on avvcbimage ####
+    my $cmd = "sed -i 's/#--debug/--debug/g' /usr/local/avamarclient/var/avvcbimageAll.cmd";
+    $ssh->system($cmd)  or die "remote command failed: " . $ssh->error;
+    foreach my $agent (1..8) {
+        my $cmd = "printf '%s\n%s\n' '--debug' '--status=60' > /usr/local/avamarclient/var-proxy-$agent/avtar.cmd";
+        $ssh->system($cmd) or die "remote command failed: " . $ssh->error; 
+    }
+}
+    

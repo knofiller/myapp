@@ -1,0 +1,23 @@
+#!/usr/bin/perl
+#
+
+use strict;
+use warnings;
+
+sub max_number {
+    my ($max_temp_number) = shift @_;
+    foreach (@_){
+        if($_ > $max_temp_number){
+            $max_temp_number = $_;
+        }
+    }
+    $max_temp_number;
+}
+
+print "print out max number from array number input \n";
+
+print "input number :\n";
+
+chomp(my @number_array = <STDIN>);
+
+print "max number is :",&max_number(@number_array),"\n";

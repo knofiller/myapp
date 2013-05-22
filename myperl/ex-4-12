@@ -1,0 +1,26 @@
+#!/usr/bin/perl
+#
+
+use strict;
+use warnings;
+
+sub total {
+    my @list_numbers = @_;
+    my $total = 0;    
+    foreach (@list_numbers) {
+        $total += $_;
+    }
+    print "total is $total\n";
+}
+
+print "input list number and calculate sum\n";
+
+print "start number : ";
+chomp(my $start = <STDIN>);
+
+print "last number : ";
+chomp(my $end = <STDIN>);
+
+my @list = ($start..$end);
+
+&total(@list);

@@ -1,0 +1,31 @@
+#!/usr/bin/perl 
+#
+
+
+use strict;
+use warnings;
+
+use Net::OpenSSH; #in case some machine not have OpenSSH installed
+
+sub usage {
+    print "Usage:\n";
+    print "./poweroff <server>\n";
+    exit;
+}
+
+my @esxhosts = @ARGV;
+my $username = 'root';
+my $password = 'changeme';
+
+&usage() unless (defined(@ARGV));
+
+foreach my $esx (@esxhosts) {
+    my $ssh = Net::OpenSSH->new($esx,
+                                master_opts => [-o => "StrictHostKeyChecking=no"],
+                                user=>$username,password=>$password);
+    $ssh->error and die "Could not establish SSH connection : " , $ssh->error;
+    ### turn on debug on avvcbimage ####
+    my $cmd = "poweroff";
+    $ssh->system($cmd)  or die "remote command failed: " . $ssh->error;
+}
+    

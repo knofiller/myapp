@@ -1,0 +1,105 @@
+#!/usr/bin/perl 
+# 
+# 5/3/13
+
+# extract information from Status line in avtar log
+
+use strict;
+use warnings;
+
+use File::Find;
+use File::Basename;
+
+sub usage {
+    print "Read and collect information from avtar,avvcbimage log and put into 'output.csv' file in same folder as this script\n";
+    print "Missing argument , please see example\n"; 
+    print "Example:\n./parse_avtar_log <folder-contain-avtar-log-file>\n";
+ 
+    exit;
+}
+
+sub parse_avtar_log {
+    my $logfile = $_;
+    my $dir = $File::Find::dir;
+    $dir = basename($dir);
+    my $proxy_version = "100";
+    my $start_time = "100";
+    my $dataset = 0;
+    #my $end = "";
+    my $backup_type = "";
+    my $throughput_rate = 0;
+    my $elapsed_time = 0;
+    my $avg_cpu = 0;
+    my $avg_mem = 0;
+    my $incremental = "";
+    my $transport = "";
+    my $totalprimarybytes = 0;
+    my $filebytes_sent = 0;
+    my $filebytes_ddsent = 0;
+    my $newdata = 0;
+    my $percent_newdata = 0;
+    my $vmname = "";
+
+    if (/(.*)_avtar\.log/) {
+    #print "open avtar log $_\n";
+    open AVTARLOG,$logfile or die "Unable to open $!";
+    while(<AVTARLOG>) {
+        if(/value="(.*)" name="vmname"/) {
+            $vmname = $1;
+        }
+        if (/Backed-up\s+(\d+\.\d+)\s+[KMG]B\s+in\s+(\d+\.\d+)\s+minutes:\s+(.*)\s+GB\/hour/) {
+            $dataset = $1; 
+            $elapsed_time = $2;
+            $throughput_rate = $3;
+            $throughput_rate =~ s/,//;
+        }
+        if (/--backup-type=(.*?)\s+/) {
+            if ($1 eq "level0_full") {
+                $backup_type = "Level 0";
+            } elsif ($1 eq "synthetic_full") {
+                $backup_type = "Level 1"; 
+            }
+        }
+        if (/Memory usage\s+.*?\((\d+\.\d+).*Avg CPU.*?(\d+\.\d+)/) {
+            $avg_mem = $1;
+            $avg_cpu = $2;
+        }
+        if (/Backup #.*files,\s+(\d+\.\d+ [KMG]B).*(\d+\.\d+)%/) {
+            $newdata = $1;
+            $percent_newdata = $2;
+        }
+        if (/SUMMARY.*filebytes_ddsent="(\d+)".*filebytes_sent="(\d+)".*totalprimarybytes="(\d+)"/) {
+            #print "MATCH\n";
+            $filebytes_ddsent = $1;
+            $filebytes_sent = $2;
+            $totalprimarybytes = $3;
+        }
+    }
+    close AVTARLOG;
+    my $avvcbimagelog = $1 . ".log"; 
+    #print "open $avvcbimagelog \n";
+    open AVVCBIMAGELOG, $avvcbimagelog or die "Unable to open file$!";
+    while(<AVVCBIMAGELOG>) {
+        if (/START.*(\d+-\d+-\d+\s+\d+:\d+:\d+).*(\d+\.\d+\.\d+-\d+)/) {
+            $proxy_version = $2;
+            $start_time = $1;
+        }
+        if (/Get Changed Block problem/) {
+            $incremental = "issue with incremental backup - actually did full level -need to examine log file";
+            last;
+        } else { $incremental = "yes";}
+        if (/Connected with\s+(.*)\s+transport/) {
+            $transport = $1;
+        }
+    } 
+    close AVVCBIMAGELOG;
+    print OUTFILE "$proxy_version,$start_time,$dir,$dataset,$backup_type,$throughput_rate,$elapsed_time,$avg_cpu,$avg_mem,$incremental,$transport,$totalprimarybytes,$filebytes_sent,$filebytes_ddsent,$newdata,$percent_newdata,$vmname\n";
+    }
+}
+
+&usage unless (@ARGV == 1);
+my $outfile = "output.csv";
+open OUTFILE,">$outfile" or die "Unable to open file $!";
+print OUTFILE "Proxy version,Start time,Folder,Dataset(GB),Backup Type,Throughput Rate (GB/hour),Elapsed Time(minutes),Average CPU(%), Average Memory(MB),Incremental backup,Transport mode,Total bytes,file bytes sent,file bytes sent DDR,new data,percent new data %,VM name\n";
+&find(\&parse_avtar_log,@ARGV);
+close OUTFILE;

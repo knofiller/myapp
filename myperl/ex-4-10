@@ -1,0 +1,20 @@
+#!/usr/bin/perl
+#
+
+use strict;
+use warnings;
+
+my @names = qw/ fred barney betty dino wilma pebbles bam-bam /;
+my $result = &which_element_is("dino",@names);
+
+sub which_element_is {
+    my($what,@list) = @_;
+    print "$what\n";
+    print "@list\n";
+    foreach (0..$#list) {
+        if ($what eq $list[$_]) {
+            return $_;
+        }
+    }
+    -1;
+}

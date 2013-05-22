@@ -1,0 +1,16 @@
+#!/usr/bin/perl
+#
+
+use strict;
+use warnings;
+
+my $car_color = 'red';
+
+sub change_color {
+    my $honda_color = 'silver';
+    $car_color = 'silver';
+    print "my car is $car_color\n";
+}
+
+&change_color;
+print "my car is $car_color\n";

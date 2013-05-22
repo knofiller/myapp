@@ -1,0 +1,39 @@
+#!/usr/bin/perl 
+# 
+# 5/3/13
+
+# extract information from Status line in avtar log
+
+use strict;
+use warnings;
+
+use File::Basename;
+
+sub usage {
+    print "Need to input avtar log file as argument and output file in csv format\n";
+    print "Example:\n./parse_avtar_log <avtar-log-file> <level0.csv>\n";
+    exit;
+}
+
+sub parse_avtar_log {
+    my ($logfile,$outfile) = @_;
+    my ($filename,$directory,$suffix) = fileparse($logfile);
+    print "examin log file $logfile\n";
+    open INPUT,$logfile or die "Unable to open $!";
+    $outfile = $directory . $outfile;
+    print "outfile $outfile\n";
+    open OUTFILE,"> $outfile" or die "Unable to open $!";
+    print OUTFILE "Timestamp, filebytes scan accumulate ,scan bytes unit, filebytes sent, filebytes sent unit ,new data percent(%)memory usage(MB) , cpu usage(%)\n";
+    while (my $line = <INPUT>) {
+        if ($line =~ /Status\s+(.*?),.*?(\d+\.\d+)\s+([KMG]B).*?(\d+\.\d+)\s+([KMG]B).*?(\d+\.\d+)%.*?(\d+)MB.*?(\d+)%\s+CPU/) {
+             print OUTFILE "$1,$2,$3,$4,$5,$6,$7,$8\n";
+        }
+    }
+    print "outfile is $outfile\n";
+    close INPUT;
+    close OUTFILE;
+
+}
+
+&usage unless (@ARGV == 2);
+&parse_avtar_log(@ARGV);
