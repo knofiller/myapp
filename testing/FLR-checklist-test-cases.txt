@@ -1,0 +1,40 @@
+##### Installation and configuration #######
+- Deploy on local storage
+- Deploy on san storage.
+- Input invalid ip
+- Input one character proxy name
+- Input long name proxy
+- Input special character for proxy name / // | : 
+- Input invalid ip
+- Input invalid netmask
+- Input invalid default gateway
+- Activate with invalid Avamar server
+- Activate with valid Avamar server
+- Activate with invalid domain name 
+- activate with valid domain name
+- input invalid gsan root password
+- input empty gsan root password
+- input one character for gsan root password
+
+##### Matrix support #######
+vCenter 5.1 5.0 4.1 
+Esx 4.0 4.1
+http://partnerweb.vmware.com/comp_guide2/sim/interop_matrix.php
+
+##### Browsing Linux backup #######
+with default installation on single disk
+SLES 9,10,11 
+RHEL 4,5,6 
+DEBIAN 
+UBUNTU 9,10,12
+- extended partition
+- 4 primary partition on single disk
+
+##### Browsing Windows backup ##### 
+with default installation on single disk
+windows 2012,8,7,2008,xp,vista
+- multiple partition on single disk
+- MBR
+- GPT
+- mountpoint
+- vhd
