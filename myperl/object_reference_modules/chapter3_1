@@ -1,0 +1,13 @@
+#!/usr/bin/perl
+#
+
+use strict;
+use warnings;
+
+my @required = qw(preserver sunscreen water_bottle jacket);
+my @skipper = qw(blue_shirt hat jacket preserver sunscreen);
+for my $item (@required) {
+	unless (grep $item eq $_, @skipper) { # not found in list?
+	    print "Skipper is missing $item.\n";
+    }
+}

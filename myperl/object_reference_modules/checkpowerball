@@ -1,0 +1,24 @@
+#!/usr/bin/perl
+# 5/20/13
+
+use strict;
+use warnings;
+
+sub check_numbers {
+	my $match = 0;
+    my @win_numbers = (22,10,13,14,52,11);
+    my $powerball = pop(@win_numbers);
+    my $team_powerball = pop(@_);
+    if ($team_powerball == $powerball) {
+        print "congratulations! you got powerball number\n";	
+    }
+    foreach my $number (@win_numbers) {
+    	if (grep $number eq $_,@_) {
+    		$match++;
+    	}
+    }	
+    print "your number match $match numbers\n";
+}
+
+my @team_numbers = (2,12,18,20,33,11);
+&check_numbers(@team_numbers);
