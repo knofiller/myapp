@@ -1,0 +1,16 @@
+#!/usr/bin/perl
+# check remote host reachable
+
+use strict;
+use warnings;
+
+use Net::Ping;
+
+my @remotehosts = ('a4dpn226d1','a4dpn226d2','a4dpn226d3','a4dpn226d4');
+#my $p = Net::Ping->new("icmp");
+my $p = Net::Ping->new();
+foreach (@remotehosts) {
+	my $host = $_ . ".asl.lab.emc.com";
+	print $host,"\n";
+	print "host $_ is alive\n" if ($p->ping($host));
+}
